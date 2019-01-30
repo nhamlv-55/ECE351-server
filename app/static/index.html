@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html>
+<head>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+<script type="text/javascript">
+    function upload() {
+        var fd = new FormData();
+        var input_content = document.getElementById("input").value
+        var test = document.getElementById("test").value
+        fd.append('input_content', input_content);
+        fd.append('test', test);
+        console.log("dasdas"); 
+        document.getElementById("submit").disabled = true; 
+        $.ajax({
+            type: 'POST',
+            url: '/post/',
+            data: fd,
+            processData: false,
+            contentType: false,
+            error: function(jqXHR, textStatus, errorThrown){
+                console.log(jqXHR)
+                console.log(textStatus)
+                console.log(errorThrown)
+                if(jqXHR.status == 413){
+                    alert("Sorry, your record was too long. Did you forget to click Stop? Please click 'Record' to record again.")
+                }
+            }
+        }).done(function(data) {
+            console.log(data)
+	    if(data){
+            document.getElementById("output").value = data.output
+            document.getElementById("error").value  = data.error
+	    	document.getElementById("submit").disabled = false; 
+	    }
+
+        });
+    }
+</script>
+
+<style>
+/* Some CSS styling */
+#left-column{
+    float: left;
+    width: 50%;
+}
+#right-column{
+    float: left;
+    width: 50%;
+}
+label{
+    display: block;
+}
+button{
+    display: block;
+}
+textarea{
+    display: block;
+}
+</style>
+
+
+</head>
+<body>
+<div id="left-column">
+ <select id="test">
+  <option value="TestFRDRecognizerAccept">TestFRDRecognizerAccept</option>
+  <option value="TestFRDRecognizerReject">TestFRDRecognizerReject</option>
+  <option value="FRecursiveDescentParser">FRecursiveDescentParser</option>
+ </select>
+<pre>
+What is being run behind the scene:
+case "TestFRDRecognizerAccept":
+    FRecursiveDescentRecognizer.main(input);
+    System.out.println("accepted, as expected:  " + input);
+    break;
+case "TestFRDRecognizerReject":
+    try {
+        FRecursiveDescentRecognizer.main(input);
+        fail("should have rejected but didn't:  " + input);
+    } catch (final Exception e) {
+        System.out.println("rejected, as expected:  " + input);
+    }
+    break;
+case "FRecursiveDescentParser":
+    FProgram f = FRecursiveDescentParser.parse(input);
+    System.out.println(f);
+    break;
+</pre> 
+</div>
+<div id="right-column">
+    <label>Input</label>
+    <textarea rows="4" cols="50" id="input"></textarea>
+    <button type="button" id="submit" onClick="upload()">Test</button> 
+    <label>Output (STDOUT) </label>
+    <textarea rows="4" cols="50" id="output"></textarea>
+    <label>Error (STDERR) </label>
+    <textarea rows="4" cols="50" id="error"></textarea>
+</div>
+
+
+
+</body>
+</html>
