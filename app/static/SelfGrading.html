@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html>
+<head>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+<script type="text/javascript">
+    function upload() {
+        var fd = new FormData();
+        var student = document.getElementById("student").value
+        var commit = document.getElementById("commit").value
+	var lab = document.getElementById("lab").value
+        fd.append('student', student);
+        fd.append('commit', commit);
+	if(commit==""){
+	    alert("Sorry, you need to provide your commit id");
+	    return;
+	}
+	fd.append('lab', lab);
+        console.log("dasdas"); 
+        document.getElementById("submit").disabled = true; 
+	document.getElementById("submit").innerHTML = "Grading..."
+        $.ajax({
+            type: 'POST',
+            url: '/postGrade/',
+            data: fd,
+            processData: false,
+            contentType: false,
+            error: function(jqXHR, textStatus, errorThrown){
+                console.log(jqXHR)
+                console.log(textStatus)
+                console.log(errorThrown)
+            }
+        }).done(function(data) {
+            console.log(data)
+	    if(data){
+            document.getElementById("grade").value = data.grade
+            document.getElementById("stacktrace").value  = data.stacktrace
+	    document.getElementById("gradedCommit").innerHTML = "Commit:" + data.commit    
+       	    document.getElementById("submit").disabled = false; 
+            document.getElementById("submit").innerHTML = "Grade";   	
+	    }
+
+        });
+    }
+</script>
+
+<style>
+/* Some CSS styling */
+#left-column{
+    float: left;
+    width: 40%;
+}
+#right-column{
+    float: left;
+    width: 60%;
+}
+label{
+    display: block;
+}
+button{
+    display: block;
+}
+textarea{
+    display: block;
+}
+</style>
+
+
+</head>
+<body>
+<div>
+ <select id="lab">
+  <option value="1">Lab 1</option>
+  <option value="2">Lab 2</option>
+  <option value="3">Lab 3</option>
+  <option value="4">Lab 4</option>
+  <option value="5">Lab 5</option>
+  <option value="6">Lab 6</option>
+  <option value="7">Lab 7</option>
+  <option value="8">Lab 8</option>
+ </select>
+ <label>Gitlab account</label>
+ <input type="text" id="student"></input>
+ <label>Commit (cannot be empty)</label>
+ <input type="text" id="commit"></input>
+ <button type="button" id="submit" onClick="upload()">Temporary down for lab 7</button>
+</div>
+<div >
+    <label id="gradedCommit"> Commit: </label>
+    <div id="left-column">
+     <label>Grade</label>
+     <textarea rows="40" cols="100" id="grade"></textarea>
+    </div>
+    <div id="right-column">
+     <label>Stacktrace</label>
+     <textarea rows="40" cols="100" id="stacktrace"></textarea>
+    </div> 
+</div>
+
+
+
+</body>
+</html>
