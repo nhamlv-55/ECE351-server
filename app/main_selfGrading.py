@@ -74,7 +74,7 @@ def post():
             with open(os.path.join(path, filename), 'r') as f_stacktrace:
                 stacktrace = f_stacktrace.read()
                 #only show stacktrace when build not success
-                if "[javac]" not in stacktrace:
+                if "[junit]" in stacktrace:
                     stacktrace = "BUILD SUCCESSFUL"
     stacktrace = "You have used %s out of %s tokens for lab %s\n-------------------------------\n"%(str(counter), str(MAX), lab)+stacktrace
     return jsonify(grade = grade, stacktrace = stacktrace, commit = commit)
